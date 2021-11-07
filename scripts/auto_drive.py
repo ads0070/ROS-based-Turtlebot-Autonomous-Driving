@@ -37,11 +37,8 @@ class Detector_Bar:
             cx = int(m['m10'] / m['m00'])
             cy = int(m['m01'] / m['m00'])
             cv2.circle(bar, (cx, cy), 10, (255, 0, 0), -1)
-            # BGR = RED
-            # BEGIN CONTROL
             self.twist.linear.x = 0.0
-            # END CONTROL
-            rospy.loginfo('detecting bar...')
+            rospy.loginfo('catch bar')
         self.cmd_vel_pub.publish(self.twist)
         bar_image_msg = self.bridge.cv2_to_imgmsg(bar, 'bgr8')
         self.bar_pub.publish(bar_image_msg)  # publish
@@ -51,6 +48,6 @@ class Detector_Bar:
 
 
 if __name__ == "__main__":
-    rospy.init_node('driving_bot')
+    rospy.init_node('auto_drive_bot')
     Detector_Bar()
     rospy.spin()
