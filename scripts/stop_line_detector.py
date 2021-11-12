@@ -9,7 +9,7 @@ from scanner import Pose_scanner
 from drive import Drive_Method
 from rosgraph_msgs.msg import Clock
 
-class Stop_Line_Detactor(Scan_image):
+class Stop_Line_Detector(Scan_image):
     def __init__(self):
         Scan_image.__init__(self, 'center', 0)
         self.clock_sub = rospy.Subscriber('clock', Clock, self.clock_callback)
