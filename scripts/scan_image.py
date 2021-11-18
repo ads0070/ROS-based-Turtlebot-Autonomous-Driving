@@ -1,13 +1,12 @@
 #! /usr/bin/env python
 
 import rospy
-import numpy
 import cv2
 import cv_bridge
 from sensor_msgs.msg import Image
 
 class Scan_image:
-    def __init__(self, name, slice_type): # input = center / left / right,
+    def __init__(self, name, slice_type):
         t_name = 'camera/rgb/image_raw'
         if name == 'left':
             t_name = 'my_left_camera/rgb/image_raw'
@@ -27,12 +26,6 @@ class Scan_image:
         self.hsv = cv2.cvtColor(self.image, cv2.COLOR_BGR2HSV)
         _, _, v = cv2.split(self.hsv)
         self.mask = cv2.inRange(v, 200, 225)
-        if self.slice_type == 1:
-            height, width = self.mask.shape
-            self.mask[:,:width / 4] = 0
-        elif self.slice_type == 2:
-            height, width = self.mask.shape
-            self.mask[:, width * 3 / 4:] = 0
 
         M = cv2.moments(self.mask)
         if M['m00'] > 0:
