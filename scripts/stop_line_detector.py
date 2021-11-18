@@ -7,9 +7,6 @@ import numpy
 
 from sensor_msgs.msg import Image
 
-from scan_image import Scan_image
-from scanner import Pose_scanner
-
 class StopLineDetector():
     def __init__(self):
         self.bridge = cv_bridge.CvBridge()
@@ -44,28 +41,3 @@ class StopLineDetector():
         mask = cv2.rectangle(mask, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
         cv2.drawContours(mask, [cnt], 0, (255, 255, 0), 1)
-
-        '''
-        for cnt in contours:
-            area = cv2.contourArea(cnt)
-
-            if 10000.0 < area and not self.detect:
-                rospy.loginfo('catch stop_line')
-                self.detect = True
-
-                # if (self.position[-1][0] - 4.0 < self.pose.position_x < self.position[-1][0] + 4.0) and \
-                #         (self.position[-1][1] - 4.0 < self.pose.position_x < self.position[-1][1] + 4.0):
-                #     self.detect = False
-                # else:
-                #     if self.detect_time + 5.0 < self.now_time:
-                #         self.position.append([self.pose.position_x, self.pose.position_y])
-                #         self.detect = True
-                #         self.detect_time = self.now_time
-            else:
-                self.detect = False
-        '''
-
-# if __name__ == '__main__':
-#     rospy.init_node('stop_line_finder')
-#     detect_stop_line = StopLineDetector()
-#     rospy.spin()
