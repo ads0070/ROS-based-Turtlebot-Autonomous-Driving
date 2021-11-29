@@ -5,7 +5,8 @@ import cv2, cv_bridge
 import numpy as np
 from sensor_msgs.msg import Image
 
-class LeftLineDetector():
+
+class LeftLineDetector:
     def __init__(self):
         self.bridge = cv_bridge.CvBridge()
         #cv2.namedWindow("Left Camera", 1)
@@ -46,8 +47,6 @@ class LeftLineDetector():
                     left_fit.append((slope, intercept))
                 else:
                     right_fit.append((slope, intercept))
-        else:
-            print "-No Left Lane-"
         left_fit_average = np.average(left_fit, axis=0)
         left_fit_average = np.round(left_fit_average, 8)
 

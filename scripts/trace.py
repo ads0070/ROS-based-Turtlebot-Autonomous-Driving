@@ -20,10 +20,10 @@ class Trace():
             self.car_controller.set_angular(0)
         elif self.right_detect.lines is None:
             self.car_controller.set_angular(-0.8)
-            self.car_controller.set_velocity(0.4)
+            self.car_controller.set_velocity(0.5)
         elif self.left_detect.lines is None:
             self.car_controller.set_angular(0.8)
-            self.car_controller.set_velocity(0.4)
+            self.car_controller.set_velocity(0.5)
         else:
             self.car_controller.set_velocity(0.8)
             self.car_controller.set_angular(0)

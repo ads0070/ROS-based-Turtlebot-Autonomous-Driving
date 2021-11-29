@@ -13,6 +13,7 @@ class StopLineDetector():
         self.image_sub = rospy.Subscriber('camera/rgb/image_raw', Image, self.image_callback)
         self.stop_count = 0
         self.area = 0
+        self.is_stopLine = False
 
     def image_callback(self, msg):
         image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
@@ -39,5 +40,10 @@ class StopLineDetector():
         self.area = cv2.contourArea(cnt)
         x, y, w, h = cv2.boundingRect(cnt)
         mask = cv2.rectangle(mask, (x, y), (x + w, y + h), (0, 0, 255), 2)
+
+        if self.area > 8000.0:
+            self.is_stopLine = True
+        else:
+            self.is_stopLine = False
 
         cv2.drawContours(mask, [cnt], 0, (255, 255, 0), 1)

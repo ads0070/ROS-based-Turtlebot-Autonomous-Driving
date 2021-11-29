@@ -13,7 +13,6 @@ import cv2
 class BlockingBarDetector(Scan_image):
     def __init__(self):
         Scan_image.__init__(self, 'center', 0)
-        self.detect = True
         self.run = False
         self.go_sign = None
         self.bar_pub = rospy.Publisher('camera/rgb/image_raw/p2_bar', Image, queue_size=1)
@@ -31,6 +30,8 @@ class BlockingBarDetector(Scan_image):
         img[240:h, 0:w] = 0
 
         _, contours, _ = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+        print len(contours)
         if len(contours) == 3:
             self.go_sign = True
         else:

@@ -45,8 +45,6 @@ class RightLineDetector():
                     left_fit.append((slope, intercept))
                 else:
                     right_fit.append((slope, intercept))
-        else:
-            print "-No Right Lane-"
         right_fit_average = np.average(right_fit, axis=0)
         right_fit_average = np.round(right_fit_average, 8)
 
