@@ -1,12 +1,10 @@
 #!/usr/bin/env python
-# coding=utf-8
-
+import math
 import time
 import rospy
-from std_msgs.msg import Bool
 from smach import State
-
 from obstacle_detector import ObstacleDetector
+from stop_sign_detector import StopSignDetector
 from stop_line_detector import StopLineDetector
 from blocking_bar_detector import BlockingBarDetector
 from trace import Trace
@@ -15,11 +13,13 @@ from trace import Trace
 class DetectedBlockingBar(State):
     def __init__(self):
         State.__init__(self, outcomes=['success'])
-        self.blocking_bar_sub = rospy.Subscriber('blocking_bar', Bool)
+        self.starting_lane = 0
+        self.angular_v = math.pi / 2
 
     def execute(self, ud):
+        self.choose_lane()
         block_detector = BlockingBarDetector()
-        while True:
+        while not rospy.is_shutdown():
             if block_detector.go_sign:
                 rospy.loginfo("Start")
                 block_detector.car_controller.set_velocity(1)
@@ -28,27 +28,61 @@ class DetectedBlockingBar(State):
                 while True:
                     block_detector.car_controller.drive()
                     if time.time() - start_time > 0:
-                        break
+                        return 'success'
 
-                block_detector.car_controller.set_velocity(0)
-                return 'success'
+
+    def choose_lane(self):
+        lane_changer = BlockingBarDetector()
+        self.starting_lane = int(input("Choose your departure lane. (enter 1 or 2)"))
+        start_time = time.time() + 0.9
+        while not rospy.is_shutdown():
+            if self.starting_lane == 1:
+                return 1
+            elif self.starting_lane == 2:
+                lane_changer.car_controller.set_angular(-self.angular_v)
+                lane_changer.car_controller.drive()
+                if time.time() - start_time > 0:
+                    rospy.sleep(1)
+                    start_time = time.time() + 1
+                    while True:
+                        lane_changer.car_controller.set_velocity(1.0)
+                        lane_changer.car_controller.set_angular(0)
+                        lane_changer.car_controller.drive()
+                        if time.time() - start_time > 0:
+                            rospy.sleep(1)
+                            start_time = time.time() + 0.9
+                            while True:
+                                lane_changer.car_controller.set_velocity(0.1)
+                                lane_changer.car_controller.set_angular(self.angular_v)
+                                lane_changer.car_controller.drive()
+                                if time.time() - start_time > 0:
+                                    rospy.sleep(1)
+                                    return 2
 
 
 class LaneTrace(State):
     def __init__(self):
-        State.__init__(self, outcomes=['success', 'detected_stop_line', 'detected_obstacle'])
+        State.__init__(self, outcomes=['success', 'detected_stop_line', 'detected_stop_sign', 'detected_obstacle'])
+        self.stop_line_count = 0
+        self.ready_obstacle = False
 
     def execute(self, ud):
         lane = Trace()
         stop_line = StopLineDetector()
+        stop_sign = StopSignDetector()
         detect_obstacle = ObstacleDetector()
         test = False
 
         while not rospy.is_shutdown():
             if stop_line.is_stopLine:
+                self.stop_line_count += 1
                 return 'detected_stop_line'
 
-            if detect_obstacle.is_obstacle:
+            if stop_sign.is_stopSign:
+                self.ready_obstacle = True
+                return 'detected_stop_sign'
+
+            if detect_obstacle.is_obstacle and self.ready_obstacle:
                 return 'detected_obstacle'
 
             if lane.right_detect.lines is None and lane.left_detect.lines is None:
@@ -72,7 +106,7 @@ class LaneTrace(State):
 
 class DetectedStopLine(State):
     def __init__(self):
-        State.__init__(self, outcomes=['success'])
+        State.__init__(self, outcomes=['success', 'drive_straight'])
         self.stop_line_count = 0
 
     def execute(self, ud):
@@ -84,12 +118,56 @@ class DetectedStopLine(State):
                 self.stop_line_count += 1
                 print ('stop!')
                 if self.stop_line_count == 2:
-                    lane.car_controller.set_angular(-0.3)
+                    lane.car_controller.set_angular(-0.2)
                     lane.car_controller.drive()
                 rospy.sleep(1.5)
                 stop_line.is_stopLine = False
                 rospy.sleep(1.5)
+                if self.stop_line_count == 4 or self.stop_line_count == 6:
+                    return 'drive_straight'
                 return 'success'
+
+
+class DetectedStopSign(State):
+    def __init__(self):
+        State.__init__(self, outcomes=['success'])
+        self.is_stopsign = False
+
+    def execute(self, ud):
+        lane = Trace()
+        print self.is_stopsign
+        while not rospy.is_shutdown():
+            print self.is_stopsign
+            if not self.is_stopsign:
+                start_time = time.time() + 7
+            else:
+                start_time = time.time() + 2
+
+            while True:
+                lane.car_controller.set_velocity(1)
+                if lane.right_detect.lines is None:
+                    lane.car_controller.set_angular(-0.3)
+
+                if lane.left_detect.lines is None:
+                    lane.car_controller.set_angular(0.3)
+
+                lane.car_controller.drive()
+
+                if time.time() - start_time > 0:
+                    print self.is_stopsign
+                    if self.is_stopsign:
+                        return 'success'
+                    break
+
+            start_time = time.time() + 3
+            while True:
+                lane.car_controller.set_angular(0)
+                lane.car_controller.set_velocity(0)
+                lane.car_controller.drive()
+                if time.time() - start_time > 0:
+                    self.is_stopsign = True
+                    print self.is_stopsign
+                    break
 
 
 class DetectedObstacle(State):
@@ -125,8 +203,23 @@ class DetectedObstacle(State):
                 if time.time() - start_time > 0:
                     return 'success'
 
-class ProjectEnd(State):
 
+class DriveStraight(State):
+    def __init__(self):
+        State.__init__(self, outcomes=['success'])
+
+    def execute(self, ud):
+        lane = Trace()
+        while not rospy.is_shutdown():
+            start_time = time.time() + 7
+            while True:
+                lane.car_controller.set_velocity(0.8)
+                lane.car_controller.drive()
+                if time.time() - start_time > 0:
+                    return 'success'
+
+
+class ProjectEnd(State):
     def __init__(self):
         State.__init__(self, outcomes=['success'])
 
