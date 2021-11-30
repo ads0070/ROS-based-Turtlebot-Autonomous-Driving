@@ -1,13 +1,12 @@
 #!/usr/bin/env python
-# -*- coding: UTF-8 -*-
 import cv_bridge
 import rospy
 import cv2
 import numpy
-
 from sensor_msgs.msg import Image
 
-class StopLineDetector():
+
+class StopLineDetector:
     def __init__(self):
         self.bridge = cv_bridge.CvBridge()
         self.image_sub = rospy.Subscriber('camera/rgb/image_raw', Image, self.image_callback)
@@ -34,7 +33,7 @@ class StopLineDetector():
         _, thr = cv2.threshold(mask, 127, 255, 0)
         _, contours, _ = cv2.findContours(thr, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         if len(contours) <= 0:
-            return  # not found
+            return
 
         cnt = contours[0]
         self.area = cv2.contourArea(cnt)

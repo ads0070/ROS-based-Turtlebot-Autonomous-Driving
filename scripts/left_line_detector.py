@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-
 import rospy
-import cv2, cv_bridge
+import cv2
+import cv_bridge
 import numpy as np
 from sensor_msgs.msg import Image
 
@@ -9,7 +9,6 @@ from sensor_msgs.msg import Image
 class LeftLineDetector:
     def __init__(self):
         self.bridge = cv_bridge.CvBridge()
-        #cv2.namedWindow("Left Camera", 1)
         self.image_sub = rospy.Subscriber('my_left_camera/rgb/image_raw', Image, self.image_callback)
         self.lines = None
 
@@ -22,8 +21,8 @@ class LeftLineDetector:
         image_width = edge.shape[1]
 
         vertices = np.array([[(0, image_height), (0, image_height/2+40),
-                              ((int)(image_width-image_width/3), (int)(image_height/2)-40),
-                              ((int)(image_width-image_width/3), (int)(image_height))]])
+                              (int(image_width - image_width / 3), int(image_height / 2) - 40),
+                              (int(image_width - image_width / 3), int(image_height))]])
 
         image_mask = np.zeros_like(edge)
         if len(edge.shape) > 2:
@@ -66,8 +65,3 @@ class LeftLineDetector:
         lines_image = np.zeros_like(lanelines_image)
         if self.lines is not None:
             cv2.line(lines_image, (x1, y1), (x2, y2), (255, 0, 0), 10)
-
-
-        # combine_image = cv2.addWeighted(lanelines_image, 0.8, lines_image, 1, 1)
-        # cv2.imshow("Left Camera", combine_image)
-        # cv2.waitKey(3)

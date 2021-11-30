@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# coding=utf-8
-
 import math
 import rospy
 from sensor_msgs.msg import LaserScan
@@ -17,7 +15,7 @@ class ObstacleDetector:
         self.rate = rospy.Rate(20)
 
     def scan_callback(self, msg):
-        self.range_ahead = msg.ranges[len(msg.ranges)/2]
+        self.range_ahead = msg.ranges[len(msg.ranges) / 2]
         self.range_right = msg.ranges[220]
 
         if math.isnan(self.range_ahead):

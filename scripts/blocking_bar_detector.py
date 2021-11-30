@@ -1,29 +1,24 @@
 #!/usr/bin/env python
-# -*- coding: UTF-8 -*-
 import numpy
-
-from std_msgs.msg import Bool
-
-from scan_image import Scan_image
+import cv_bridge
 from sensor_msgs.msg import Image
 from car_controller import CarController
 import rospy
 import cv2
 
-class BlockingBarDetector(Scan_image):
+
+class BlockingBarDetector:
     def __init__(self):
-        Scan_image.__init__(self, 'center', 0)
-        self.run = False
+        self.bridge = cv_bridge.CvBridge()
         self.go_sign = None
-        self.bar_pub = rospy.Publisher('camera/rgb/image_raw/p2_bar', Image, queue_size=1)
-        self.go_sign_pub = rospy.Publisher('blocking_bar', Bool, queue_size=1)
+        self.image_sub = rospy.Subscriber('camera/rgb/image_raw', Image, self.image_callback)
         self.car_controller = CarController()
 
     def image_callback(self, msg):
-        Scan_image.image_callback(self, msg)
+        image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
         lower_red = numpy.array([0, 0, 90])
         upper_red = numpy.array([5, 5, 110])
-        img = cv2.inRange(self.image, lower_red, upper_red)
+        img = cv2.inRange(image, lower_red, upper_red)
 
         h, w = img.shape
         img[0:180, 0:w] = 0
@@ -31,15 +26,7 @@ class BlockingBarDetector(Scan_image):
 
         _, contours, _ = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-        print len(contours)
         if len(contours) == 3:
             self.go_sign = True
         else:
             self.go_sign = False
-
-        ''' no.2 lane start
-        # if len(contours) == 0:
-        #     self.go_sign = True
-        # else:
-        #     self.go_sign = False
-        '''
