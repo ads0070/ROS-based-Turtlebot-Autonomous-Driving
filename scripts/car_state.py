@@ -18,7 +18,7 @@ class DetectedBlockingBar(State):
 
     def execute(self, ud):
         start = self.choose_lane()
-        rospy.sleep(1)
+
         if start == 1 or start == 2:
             blocking_bar = BlockingBarDetector()
             while not rospy.is_shutdown():
@@ -33,7 +33,7 @@ class DetectedBlockingBar(State):
     def choose_lane(self):
         lane_changer = BlockingBarDetector()
         self.starting_lane = int(input("Choose your departure lane. (enter 1 or 2)"))
-        start_time = time.time() + 0.9
+        start_time = time.time() + 0.5
         while not rospy.is_shutdown():
             if self.starting_lane == 1:
                 return 1
@@ -42,14 +42,14 @@ class DetectedBlockingBar(State):
                 lane_changer.car_controller.drive()
                 if time.time() - start_time > 0:
                     rospy.sleep(1)
-                    start_time = time.time() + 1
+                    start_time = time.time() + 0.7
                     while True:
                         lane_changer.car_controller.set_velocity(1.0)
                         lane_changer.car_controller.set_angular(0)
                         lane_changer.car_controller.drive()
                         if time.time() - start_time > 0:
                             rospy.sleep(1)
-                            start_time = time.time() + 0.9
+                            start_time = time.time() + 0.5
                             while True:
                                 lane_changer.car_controller.set_velocity(0.1)
                                 lane_changer.car_controller.set_angular(self.angular_v)
@@ -110,9 +110,9 @@ class DetectedStopLine(State):
             if stop_line.is_stopLine and stop_line.area > 8000.0:
                 self.stop_line_count += 1
 
-                if self.stop_line_count == 2:
-                    lane.car_controller.set_angular(-0.1)
-                    lane.car_controller.drive()
+                # if self.stop_line_count == 2:
+                #     lane.car_controller.set_angular(-0.1)
+                #     lane.car_controller.drive()
 
                 if self.stop_line_count == 4:
                     lane.car_controller.set_angular(0.2)
@@ -143,12 +143,12 @@ class DetectedStopSign(State):
 
         while not rospy.is_shutdown():
             if not self.is_stopsign:
-                start_time = time.time() + 12
+                start_time = time.time()
             else:
                 start_time = time.time() + 3
 
             if self.count_stopsign == 2:
-                start_time = time.time() + 10
+                start_time = time.time() + 6
 
             while True:
                 lane.car_controller.set_velocity(1)
@@ -194,7 +194,7 @@ class DetectedObstacle(State):
                     lane.car_controller.drive()
                 else:
                     if lane.right_detect.lines is None and lane.left_detect.lines is None:
-                        lane.car_controller.set_velocity(1.0)
+                        lane.car_controller.set_velocity(0.3)
                         lane.car_controller.set_angular(0)
                     elif lane.right_detect.lines is None:
                         lane.car_controller.set_angular(-0.2)
@@ -203,7 +203,7 @@ class DetectedObstacle(State):
                         lane.car_controller.set_angular(0.2)
                         lane.car_controller.set_velocity(1.0)
                     else:
-                        lane.car_controller.set_velocity(1.0)
+                        lane.car_controller.set_velocity(0.8)
                         lane.car_controller.set_angular(0)
                     lane.car_controller.drive()
 

@@ -25,11 +25,12 @@ class StopSignDetector:
 
         h, w = gray_img.shape
         block_bar_mask = gray_img
-        block_bar_mask[0:h, 0:w / 2] = 0
-        block_bar_mask[h / 2:h, 0:w] = 0
+
+        block_bar_mask[0:0, 0:w] = 0
+        block_bar_mask[10:h, 0:w] = 0
 
         block_bar_mask, self.contours, hierarchy = cv2.findContours(block_bar_mask, cv2.RETR_TREE,
                                                                     cv2.CHAIN_APPROX_SIMPLE)
 
-        if len(self.contours) == 17:
+        if len(self.contours) > 0:
             self.is_stopSign = True
