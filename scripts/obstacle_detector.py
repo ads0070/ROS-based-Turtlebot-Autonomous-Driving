@@ -12,7 +12,6 @@ class ObstacleDetector:
         self.is_obstacle = False
         self.scan_sub = rospy.Subscriber('scan', LaserScan, self.scan_callback)
         self.car_controller = CarController()
-        self.rate = rospy.Rate(20)
 
     def scan_callback(self, msg):
         self.range_ahead = msg.ranges[len(msg.ranges) / 2]
