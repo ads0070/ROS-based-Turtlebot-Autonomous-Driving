@@ -21,10 +21,10 @@ class StopSignDetector:
 
         lower_red = np.array([0, 0, 90])
         upper_red = np.array([5, 5, 110])
-        gray_img = cv2.inRange(hsv, lower_red, upper_red)
+        red_img = cv2.inRange(hsv, lower_red, upper_red)
 
-        h, w = gray_img.shape
-        block_bar_mask = gray_img
+        h, w = red_img.shape
+        block_bar_mask = red_img
 
         block_bar_mask[0:0, 0:w] = 0
         block_bar_mask[10:h, 0:w] = 0
