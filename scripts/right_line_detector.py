@@ -64,3 +64,5 @@ class RightLineDetector:
         lines_image = np.zeros_like(lanelines_image)
         if self.lines is not None:
             cv2.line(lines_image, (x1, y1), (x2, y2), (255, 0, 0), 10)
+        
+        combine_image = cv2.addWeighted(lanelines_image, 0.8, lines_image, 1, 1)
