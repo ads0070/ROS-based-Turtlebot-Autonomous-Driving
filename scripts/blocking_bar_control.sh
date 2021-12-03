@@ -6,7 +6,7 @@
 #rosservice call /gazebo/clear_joint_forces '{joint_name: blocking_bar_joint}'
 sleep 10
 
-while :
+for i in {1..10};
 do
     sleep_time=$(($RANDOM % 10))
     # sleep_time=$(($sleep_time + 3))
