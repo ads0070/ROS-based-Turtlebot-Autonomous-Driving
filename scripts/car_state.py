@@ -101,33 +101,37 @@ class DetectedStopLine(State):
     def __init__(self):
         State.__init__(self, outcomes=['success', 'drive_straight'])
         self.stop_line_count = 0
+        self.is_stop = True
 
     def execute(self, ud):
         lane = Trace()
-        stop_line = StopLineDetector()
+        self.is_stop = True
 
         while not rospy.is_shutdown():
-            if stop_line.is_stopLine and stop_line.area > 8000.0:
+            if self.is_stop:
                 self.stop_line_count += 1
 
                 # if self.stop_line_count == 2:
-                #     lane.car_controller.set_angular(-0.1)
+                #     lane.car_controller.set_angular(-0.2)
                 #     lane.car_controller.drive()
 
                 if self.stop_line_count == 4:
-                    lane.car_controller.set_angular(0.2)
+                    lane.car_controller.set_angular(0)
                     lane.car_controller.drive()
 
                 if self.stop_line_count == 6:
-                    lane.car_controller.set_angular(-0.3)
+                    lane.car_controller.set_angular(-0.1)
                     lane.car_controller.drive()
 
-                rospy.sleep(1.5)
-                stop_line.is_stopLine = False
-                rospy.sleep(1.5)
+                self.is_stop = False
+                rospy.sleep(3)
 
                 if self.stop_line_count == 4 or self.stop_line_count == 6:
                     return 'drive_straight'
+
+                if self.stop_line_count == 7:
+                    return 'drive_left'
+
                 return 'success'
 
 
