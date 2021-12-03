@@ -145,10 +145,10 @@ class DetectedStopSign(State):
             if not self.is_stopsign:
                 start_time = time.time()
             else:
-                start_time = time.time() + 3
+                start_time = time.time() + 2
 
             if self.count_stopsign == 2:
-                start_time = time.time() + 6
+                start_time = time.time() + 1
 
             while True:
                 lane.car_controller.set_velocity(1)
