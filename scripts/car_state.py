@@ -232,3 +232,4 @@ class ProjectEnd(State):
 
     def execute(self, ud):
         print "END"
+        return 'success'
