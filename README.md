@@ -44,5 +44,3 @@ This project exists thanks to all the people who contribute.
 
 <a href="https://github.com/014787410">
 <img src="https://avatars.githubusercontent.com/u/93768331?v=4" height="50" alt="박진우"/></a>
-
-<img src="" height="50" alt="김두영"/>
