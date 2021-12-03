@@ -255,7 +255,7 @@
     <parent link="base_link"/>
     <child link="my_left_camera"/>
   </joint>
-  <!-- my_camera left-->
+  <!-- my_camera -->
        <link name="my_right_camera">
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
