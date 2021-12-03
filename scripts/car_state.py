@@ -111,10 +111,6 @@ class DetectedStopLine(State):
             if self.is_stop:
                 self.stop_line_count += 1
 
-                # if self.stop_line_count == 2:
-                #     lane.car_controller.set_angular(-0.2)
-                #     lane.car_controller.drive()
-
                 if self.stop_line_count == 4:
                     lane.car_controller.set_angular(0)
                     lane.car_controller.drive()
