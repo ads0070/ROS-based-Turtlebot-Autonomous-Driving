@@ -44,6 +44,13 @@ $ roslaunch deu_car car_test.launch
 $ rosrun deu_car car_state_machine.py
 ```
 
+차선 변경 방법
+```
+* launch 파일과 car_state_machine.py 실행 후 터미널에 1 또는 2 입력
+* 1 : 1차선 주행 시작
+* 2 : 2차선으로 이동 후 주행 시작
+```
+
 ## 4. 팀원
 - 20173217 안대현
 - 20194152 허세진
