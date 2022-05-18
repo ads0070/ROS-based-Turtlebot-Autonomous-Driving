@@ -5,8 +5,11 @@
 
 1. [배경](#1-배경)
 2. [개발 환경](#2-개발-환경)
-3. [사용법](#3-사용법)
-4. [팀원](#4-팀원)
+3. [주요 기능](#3-주요-기능)
+4. [사용법](#4-사용법)
+5. [발표 영상](#5-발표-영상)
+6. [데모 영상](#6-데모-영상)
+7. [팀원](#7-팀원)
 
 ## 1. 배경
 
@@ -21,9 +24,33 @@
 * Programming Language : Python2.7
 * IDE : Pycharm 2.7.17
 * Framework : Ros melodic
+* Library : OpenCV
+* Version control : Docker, Git
 ```
 
-## 3. 사용법
+## 3. 주요 기능
+
+1. 차단바 인식</br>
+입력 영상에서 차단바를 인식하면 4초간 정지한다.
+![차단바 인식](image/차단바-인식.png)
+
+2. 정지선 인식 및 정지</br>
+Image에 대한 마스킹을 진행하여 정지선을 검출하고, 터틀봇을 3초간 정지시킨다.
+![정지선 인식](image/정지선-검출.png)
+
+3. 차선 인식 및 추적</br>
+Canny 알고리즘을 사용하여 차선을 인식하고, 인식되는 차선에 따라 주행 방향을 설정한다.
+![차선 인식](image/차선-인식.png)
+
+4. 정지 표지판 인식 및 정지</br>
+정지 표지판의 윤곽선을 검출하여 터틀봇을 3초간 정지시킨다.
+![정지표지판 인식](image/정지표지판-인식.png)
+
+5. 장애물 인식 및 정지</br>
+LaserScan을 사용하여 전방에 장애물이 있는지 스캔하고, 인식되면 터틀봇을 정지시킨다.
+![장애물 인식](image/장애물-인식.png)
+
+## 4. 사용법
 
 터틀봇에 좌, 우 카메라 추가  
 [kobuki.urdf.xacro](https://github.com/ads0070/deu_car/blob/master/kobuki.urdf.xacro) 참고
@@ -52,7 +79,15 @@ $ rosrun deu_car car_state_machine.py
 * 2 : 2차선으로 이동 후 주행 시작
 ```
 
-## 4. 팀원
+## 5. 발표 영상
+
+[![발표 영상](http://img.youtube.com/vi/ZHMupwaDdGE/0.jpg)](https://youtu.be/ZHMupwaDdGE)
+
+## 6. 데모 영상
+
+[![발표 영상](http://img.youtube.com/vi/Jb6omYSgUpM/0.jpg)](https://youtu.be/Jb6omYSgUpM)
+
+## 7. 팀원
 - 20173217 안대현
 - 20194152 허세진
 - 20173176 박진우
